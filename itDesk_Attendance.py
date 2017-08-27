@@ -411,8 +411,6 @@ if __name__ == "__main__":
     print('Done')
     web.quit()
 
-
-
     #寫成jason
     # encodedjson = json.dumps(itDeskAttendanceList, ensure_ascii=False)
     # with open("/Users/yunhan/Desktop/itAttendance.json", "w") as f:

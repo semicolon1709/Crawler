@@ -362,7 +362,7 @@ if __name__ == "__main__":
 
 
 
-    # jason
+    # 寫成jason
     # encodedjson = json.dumps(itAttendanceList, ensure_ascii=False)
     # with open("/Users/yunhan/Desktop/itAttendance.json", "w") as f:
     #     f.write(encodedjson)

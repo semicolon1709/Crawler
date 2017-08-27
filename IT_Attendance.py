@@ -81,12 +81,12 @@ if __name__ == "__main__":
     password = input("Password:")
     driver_path = '/Users/yunhan/driver/chromedriver'
     web = webdriver.Chrome(driver_path)
-    web.get('https://talk.chatchat365.com/api/v3/oauth/gitlab/login')
+    web.get('pleseEnterUrlForLongin')
     web.find_element_by_id('username').send_keys(username)
     web.find_element_by_id('password').send_keys(password)
     web.find_element_by_id('password').send_keys(Keys.ENTER)
     time.sleep(3)
-    web.get('https://talk.chatchat365.com/smartbackend/channels/it-signin')
+    web.get('linkToForum')
     time.sleep(10)
 
 

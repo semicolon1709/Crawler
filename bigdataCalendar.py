@@ -1,18 +1,11 @@
 # coding:utf-8
 
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-import time
-import json
-from datetime import datetime
-import datetime as dt
-import calendar
-from openpyxl import Workbook
-import threading
 from selenium.webdriver.support.ui import Select
-
-
+import csv
+from datetime import datetime
 def dataGrab(year,month):
+
     web.switch_to.frame('left')
     selectY = Select(web.find_element_by_name('YY'))
     selectY.select_by_value(year)
@@ -34,7 +27,8 @@ def dataGrab(year,month):
     try:
         test = str(".//*[@class='A9']/tbody/tr[17]/td[3]")
         while web.find_element_by_xpath(test).text:
-            check.extend(17)
+            check.append(17)
+            break
     except:
         pass
 
@@ -42,28 +36,6 @@ def dataGrab(year,month):
 
     for i in range(3,10,1):
         for j in check:
-            dicMo = {
-                'Subject': '',
-                'Start Date': '',
-                'Start Time': '',
-                'End Date': '',
-                'End Time': '',
-            }
-            dicNo = {
-                'Subject': '',
-                'Start Date': '',
-                'Start Time': '',
-                'End Date': '',
-                'End Time': '',
-            }
-            dicNi = {
-                'Subject': '',
-                'Start Date': '',
-                'Start Time': '',
-                'End Date': '',
-                'End Time': '',
-            }
-
 
             loc_str1= str((".//*[@class='A9']/tbody/tr[{}]/td[{}]").format(j,i))
             loc_str2= str((".//*[@class='A9']/tbody/tr[{}]/td[{}]").format(j+1,i-1))
@@ -72,75 +44,80 @@ def dataGrab(year,month):
 
             morning = web.find_element_by_xpath(loc_str1).text
             if len(morning) != 0:
+                monthNum = morning.split('／')[0]
                 dayNum = morning.split('／')[1].split('\n')[0]
-                date = year + '-' + month + '-' + dayNum
+                date = year + '-' + monthNum + '-' + dayNum
                 if len(morning) > 5:
                     if len(dayNum) ==1:
                         morningSubject = morning.split('／')[1][2:].replace('\n','-')
                     else:
                         morningSubject = morning.split('／')[1][3:].replace('\n','-')
-                    dicMo['Start Date'] = date
-                    dicMo['End Date'] = date
-                    dicMo['Subject'] = morningSubject
-                    dicMo['Start Time'] = '9:00 AM'
-                    dicMo['End Time'] = '12:00 PM'
-                    print(dicMo)
-                    tmpList.append(dicMo)
+                    if morningSubject[0] == '-':
+                        morningSubject = morningSubject[1:]
+                    tupleMo = (morningSubject,date,'9:00 AM',date,'12:00 PM')
+                    print(tupleMo)
+                    tmpList.append(tupleMo)
 
 
                 noon = web.find_element_by_xpath(loc_str2).text
                 if len(noon) != 0:
-                    dicNo['Start Date'] = date
-                    dicNo['End Date'] = date
-                    dicNo['Subject']=noon.replace('\n','-')
-                    dicNo['Start Time']='13:30 PM'
-                    dicNo['End Time']='16:30 PM'
-                    print(dicNo)
-                    tmpList.append(dicNo)
+                    noonSubject = noon.replace('\n','-')
+                    if noonSubject[0] == '-':
+                        noonSubject = noonSubject[1:]
+                    tupleNo = (noonSubject, date, '13:30 PM', date, '16:30 PM')
+                    print(tupleNo)
+                    tmpList.append(tupleNo)
 
                 night = web.find_element_by_xpath(loc_str3).text
                 if len(night) != 0:
-                    dicNi['Start Date'] = date
-                    dicNi['End Date'] = date
-                    dicNi['Subject']=night.replace('\n','-')
-                    dicNi['Start Time']='18:00 PM'
-                    dicNi['End Time']='21:00 PM'
-                    print(dicNi)
-                    tmpList.append(dicNi)
+                    nightSubject = night.replace('\n', '-')
+                    if nightSubject[0] == '-':
+                        nightSubject = nightSubject[1:]
+                    tupleNi = (nightSubject, date, '18:00 PM', date, '21:00 PM')
+                    print(tupleNi)
+                    tmpList.append(tupleNi)
     web.switch_to.default_content()
     return tmpList
 
 
-
 calendarList = []
+threads=[]
+start = input('輸入開始年月，如"2017-9"')
+end = input(('輸入結束年月，如"2018-2"'))
+startYear = int(start.split('-')[0])
+startMonth = int(start.split('-')[1])
+endYear = int(end.split('-')[0])
+endMonth = int(end.split('-')[1])
 
 
-# driver_path = 'D:\webdriver\chromedriver'
-driver_path = '/Users/yunhan/driver/chromedriver'
+
+driver_path = 'D:\webdriver\chromedriver'
+# driver_path = '/Users/yunhan/driver/chromedriver'
 web = webdriver.Chrome(driver_path)
+# driver_path = 'D:\webdriver\phantomjs\\bin\phantomjs'
+# web = webdriver.PhantomJS(driver_path)
 web.get('http://140.115.236.11/')
 
+endTmpMonth = 13
+s1 = datetime.now()
+for i in range(startYear, endYear + 1, 1):
+    if i != startYear:
+        startMonth = 1
+    if i == endYear:
+        endTmpMonth = endMonth+1
+    for j in range(startMonth, endTmpMonth, 1):
+        calendarList.extend(dataGrab(str(i),str(j)))
+s2 = datetime.now()
+
+calendarSet=set(calendarList)
+print(calendarSet)
+print(str(s2-s1))
+headers  =  ['Subject', 'Start Date', 'Start Time', 'End Date', 'End Time']
 
 
-
-
-
-
-# calendarList.extend(dataGrab('2017','9'))
-# calendarList.extend(dataGrab('2017','10'))
-# calendarList.extend(dataGrab('2017','11'))
-calendarList.extend(dataGrab('2017','12'))
-calendarList.extend(dataGrab('2018','1'))
-calendarList.extend(dataGrab('2018','2'))
-
-
-
-
-print(calendarList)
-
-happy
+with open('calendar.csv', 'w', newline='') as f:
+    f_csv = csv.writer(f)
+    f_csv.writerow(headers)
+    f_csv.writerows(calendarSet)
+    f.close()
 web.quit()
-
-
-
-

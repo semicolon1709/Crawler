@@ -3,7 +3,7 @@ import requests as r
 from bs4 import BeautifulSoup
 import re
 from threading import Thread
-from Queue import Queue
+from queue import Queue
 from datetime import datetime
 import json
 import random
@@ -115,12 +115,12 @@ def crawler(page):
             aList.append(article_dict)
         except:
             pass
-    print page
+    print(page)
 
 nums = 30
 for i in range(8, 9):
     aList = []
-    queue = Queue();
+    queue = Queue()
 
     beginPage = 1 + nums * i
     endPage = (nums+1) + nums * i

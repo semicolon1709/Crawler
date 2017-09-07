@@ -131,16 +131,16 @@ for i in range(8, 9):
     s1 = datetime.now()
     try:
         # 設定THREAD數量及執行的FUNCTION
-        threads = map(lambda k: Thread(target=worker), xrange(NUM_THREADS))
+        threads = map(lambda k: Thread(target=worker), range(NUM_THREADS))
         # 啟動THREAD
         map(lambda th: th.start(), threads)
         map(lambda th: th.join(), threads)
     except:
-        print "thread error"
+        print("thread error")
     finally:
         s2 = datetime.now()
         encodedjson = json.dumps(aList, ensure_ascii=False)
         with open("E:\\mamibuy" + str(beginPage) + "_" + str(endPage) + ".json", "w") as f:
             f.write(encodedjson.encode("utf-8"))
             f.close()
-        print "All - " + str(i) + " Finish " + str(s2 - s1) + "!!"
+        print("All - " + str(i) + " Finish " + str(s2 - s1) + "!!")
